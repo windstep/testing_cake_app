@@ -4,6 +4,7 @@ namespace App\Test\TestCase\Controller;
 use App\Model\Entity\Task;
 use App\Model\Table\TasksTable;
 use App\Model\Table\UsersTable;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -34,7 +35,7 @@ class TasksControllerTest extends TestCase
 
     public function testIndexPageLoads()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->get('/');
         $this->assertResponseOk();
         $this->assertResponseContains('Tasks');
@@ -42,10 +43,10 @@ class TasksControllerTest extends TestCase
 
     public function testIndexPageContainsTasks()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->get('/');
         /** @var Task[] $tasks */
-        $tasks = (new TasksTable())->find()->toArray();
+        $tasks = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->toArray();
         foreach ($tasks as $i => $task) {
             $this->assertResponseContains($task->title);
             $this->assertResponseContains($task->description);
@@ -55,8 +56,8 @@ class TasksControllerTest extends TestCase
     public function testViewPageLoadsAndContainsInfo()
     {
         $this->addFixture('app.Task');
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
-        $task = (new TasksTable())->find()->whereNull(['executor_id'])->limit(1)->contain(['Author'])->toArray()[0];
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->whereNull(['executor_id'])->limit(1)->contain(['Author'])->toArray()[0];
         $this->get('/' . $task->id);
         $this->assertResponseOk();
         $this->assertResponseContains('Task');
@@ -73,7 +74,7 @@ class TasksControllerTest extends TestCase
 
     public function testAddPageLoads()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->get('/new');
         $this->assertResponseOk();
         $this->assertResponseContains('form');
@@ -81,7 +82,7 @@ class TasksControllerTest extends TestCase
 
     public function testTaskSuccessfullyCreates()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
         $data = [
             'title' => 'Random Title',
@@ -99,7 +100,7 @@ class TasksControllerTest extends TestCase
 
     public function testTaskRedirectsBackOnLackOfData()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
         $data = [
             'title' => 'Random Title',
@@ -119,7 +120,7 @@ class TasksControllerTest extends TestCase
 
     public function testEditPageAvailableToAuthor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $task = (new TasksTable)->find()->where(['author_id' => 1, 'executor_id !=' => 1])->toArray()[0];
         $this->get('/' . $task->id . '/edit');
         $this->assertResponseOk();
@@ -128,7 +129,7 @@ class TasksControllerTest extends TestCase
 
     public function testEditPageAvailableToExecutor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $task = (new TasksTable)->find()->where(['executor_id' => 1, 'author_id !=' => 1])->toArray()[0];
         $this->get('/' . $task->id . '/edit');
         $this->assertResponseOk();
@@ -137,7 +138,7 @@ class TasksControllerTest extends TestCase
 
     public function testEditPageNotAvailableToRandomUser()
     {
-        $this->session(['Auth' => (new UsersTable())->get(3)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(3)]);
         $task = (new TasksTable)->find()->limit(1)->toArray()[0];
         $this->get('/' . $task->id . '/edit');
         $this->assertRedirect('/');
@@ -145,7 +146,7 @@ class TasksControllerTest extends TestCase
 
     public function testTaskEditableToAuthor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
         $data = [
             'title' => 'Random Title',
@@ -155,11 +156,11 @@ class TasksControllerTest extends TestCase
             'state' => TasksTable::STATE_CANCELLED,
         ];
 
-        $task = (new TasksTable())->find()->where(['executor_id !=' => 1, 'author_id' => 1])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 1, 'author_id' => 1])->first();
 
         $this->post("/{$task->id}", $data);
         $this->assertRedirect();
-        $updatedDB = (new TasksTable())->get($task->id);
+        $updatedDB = (TableRegistry::getTableLocator()->get('app.Tasks'))->get($task->id);
         foreach ($data as $field => $value) {
             $this->assertEquals($value, $updatedDB->{$field});
         }
@@ -167,7 +168,7 @@ class TasksControllerTest extends TestCase
 
     public function testTaskEditableToExecutor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
         $data = [
             'title' => 'Random Title',
@@ -177,11 +178,11 @@ class TasksControllerTest extends TestCase
             'state' => TasksTable::STATE_CANCELLED,
         ];
 
-        $task = (new TasksTable())->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
 
         $this->post("/{$task->id}", $data);
         $this->assertRedirect();
-        $updatedDB = (new TasksTable())->get($task->id);
+        $updatedDB = (TableRegistry::getTableLocator()->get('app.Tasks'))->get($task->id);
         foreach ($data as $field => $value) {
             $this->assertEquals($value, $updatedDB->{$field});
         }
@@ -189,7 +190,7 @@ class TasksControllerTest extends TestCase
 
     public function testTaskNotEditableToRandomUser()
     {
-        $this->session(['Auth' => (new UsersTable())->get(2)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(2)]);
         $this->enableCsrfToken();
         $data = [
             'title' => 'Random Title',
@@ -199,7 +200,7 @@ class TasksControllerTest extends TestCase
             'state' => TasksTable::STATE_CANCELLED,
         ];
 
-        $task = (new TasksTable())->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
 
         $this->post("/{$task->id}", $data);
         $this->assertRedirect('/');
@@ -207,28 +208,28 @@ class TasksControllerTest extends TestCase
 
     public function testTaskDeletableByAuthor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
-        $task = (new TasksTable())->find()->where(['executor_id !=' => 1, 'author_id' => 1])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 1, 'author_id' => 1])->first();
         $this->delete("/{$task->id}");
         $this->assertRedirect('/');
-        $this->assertCount(0, (new TasksTable())->find()->where(['id' => $task->id])->all());
+        $this->assertCount(0, (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['id' => $task->id])->all());
     }
 
     public function testTaskNotDeletableByExecutor()
     {
-        $this->session(['Auth' => (new UsersTable())->get(1)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
-        $task = (new TasksTable())->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
         $this->delete("/{$task->id}");
         $this->assertRedirect('/');
     }
 
     public function testTaskNotDeletableByRandomUser()
     {
-        $this->session(['Auth' => (new UsersTable())->get(2)]);
+        $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(2)]);
         $this->enableCsrfToken();
-        $task = (new TasksTable())->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
+        $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
         $this->delete("/{$task->id}");
         $this->assertRedirect('/');
     }
