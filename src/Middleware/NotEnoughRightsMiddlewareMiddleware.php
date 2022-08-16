@@ -3,6 +3,7 @@ namespace App\Middleware;
 
 use Authentication\Authenticator\UnauthenticatedException;
 use Authentication\Authenticator\UnauthorizedException as UnauthorizedExceptionAlias;
+use Authorization\Exception\ForbiddenException;
 use Cake\Http\Exception\UnauthorizedException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,6 +28,8 @@ class NotEnoughRightsMiddlewareMiddleware
             return $next($request, $response);
         } catch (UnauthorizedException | UnauthorizedExceptionAlias | UnauthenticatedException $e) {
             return $response->withHeader('Location', '/login');
+        } catch (ForbiddenException $e) {
+            return $response->withHeader('Location', '/');
         }
     }
 }

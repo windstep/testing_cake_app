@@ -140,7 +140,7 @@ class TasksControllerTest extends TestCase
         $this->session(['Auth' => (new UsersTable())->get(3)]);
         $task = (new TasksTable)->find()->limit(1)->toArray()[0];
         $this->get('/' . $task->id . '/edit');
-        $this->assertResponseCode(500);
+        $this->assertRedirect('/');
     }
 
     public function testTaskEditableToAuthor()
@@ -202,7 +202,7 @@ class TasksControllerTest extends TestCase
         $task = (new TasksTable())->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
 
         $this->post("/{$task->id}", $data);
-        $this->assertResponseCode(500);
+        $this->assertRedirect('/');
     }
 
     public function testTaskDeletableByAuthor()
@@ -221,7 +221,7 @@ class TasksControllerTest extends TestCase
         $this->enableCsrfToken();
         $task = (new TasksTable())->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
         $this->delete("/{$task->id}");
-        $this->assertResponseCode(500);
+        $this->assertRedirect('/');
     }
 
     public function testTaskNotDeletableByRandomUser()
@@ -230,7 +230,7 @@ class TasksControllerTest extends TestCase
         $this->enableCsrfToken();
         $task = (new TasksTable())->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
         $this->delete("/{$task->id}");
-        $this->assertResponseCode(500);
+        $this->assertRedirect('/');
     }
 
 }
