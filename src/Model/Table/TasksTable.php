@@ -101,7 +101,9 @@ class TasksTable extends Table
 
         $validator
             ->scalar('description')
-            ->allowEmptyString('description');
+            ->requirePresence('description')
+            ->notEmptyString('description')
+            ->maxLength('description', 65000);
 
         $validator
             ->scalar('comment')
