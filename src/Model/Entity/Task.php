@@ -27,12 +27,10 @@ class Task extends Entity
         'description' => true,
         'comment' => true,
         'status' => true,
-        'author_id' => true,
+        'author_id' => false,
         'executor_id' => true,
         'state' => true,
-        'created' => true,
-        'updated' => true,
-        'author' => true,
-        'executor' => true,
+        'created' => false,
+        'updated' => false,
     ];
 }

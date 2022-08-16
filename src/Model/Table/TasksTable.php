@@ -109,13 +109,13 @@ class TasksTable extends Table
 
         $validator
             ->scalar('status')
-            ->inList('status', [self::STATUS_CRITICAL, self::STATUS_BUG, self::STATUS_IMPROVEMENT])
+            ->inList('status', array_keys(self::STATUS_MAP))
             ->requirePresence('status')
             ->notEmptyString('status');
 
         $validator
             ->scalar('state')
-            ->inList('state', [self::STATE_CREATED, self::STATE_EXECUTION, self::STATE_EXECUTED, self::STATE_CANCELLED])
+            ->inList('state', array_keys(self::STATE_MAP))
             ->requirePresence('state')
             ->notEmptyString('state');
 
