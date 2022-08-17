@@ -16,9 +16,13 @@
                         echo $this->Form->control('title', ['class' => 'form-control mb-4']);
                         echo $this->Form->control('description', ['class' => 'form-control mb-4']);
                         echo $this->Form->select('status', $statuses, ['default' => $defaultStatus, 'class' => 'form-control mb-4']);
-                        echo $this->Form->select('state', $states, ['default' => $defaultState, 'class' => 'form-control mb-4']);
-                        echo $this->Form->select('author_id', $users, ['class' => 'form-control mb-4']);
-                        echo $this->Form->select('executor_id', $users, ['class' => 'form-control mb-4']);
+                        echo $this->Form->select('state', $states, ['default' => $defaultState, 'class' => 'form-control mb-4']);?>
+                        <div class="mb-4">
+                            Author:
+                            <?= $task->author->name ?>
+                        </div>
+                        <?php
+                            echo $this->Form->select('executor_id', $users, ['class' => 'form-control mb-4']);
                         ?>
                     </fieldset>
                     <?= $this->Form->button(__('Submit'), ['class' => 'btn btn-outline-primary']) ?>

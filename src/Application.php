@@ -102,7 +102,9 @@ class Application extends BaseApplication implements AuthorizationServiceProvide
             ->add(new RoutingMiddleware($this))
             ->add(new NotEnoughRightsMiddlewareMiddleware())
             ->add(new AuthenticationMiddleware($this))
-            ->add(new AuthorizationMiddleware($this));
+            ->add(new AuthorizationMiddleware($this, [
+                'requireAuthorizationCheck' => false
+            ]));
 
         return $middlewareQueue;
     }

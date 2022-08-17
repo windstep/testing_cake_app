@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use Cake\Utility\Hash;
-use Cake\Utility\Security;
+use Cake\Event\Event;
 
 class AuthController extends AppController
 {
@@ -22,8 +21,14 @@ class AuthController extends AppController
 
     public function logout()
     {
-        $this->Authorization->skipAuthorization();
         $this->Authentication->logout();
         return $this->redirect('/login');
+    }
+
+
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Authentication->allowUnauthenticated(['login']);
     }
 }

@@ -34,11 +34,9 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     $routes->get('/', ['controller' => 'Tasks', 'action' => 'index'], 'tasks.index');
     $routes->get('/:id', ['controller' => 'Tasks', 'action' => 'view'], 'tasks.view')->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
-    $routes->get('/:id/edit', ['controller' => 'Tasks', 'action' => 'edit'], 'tasks.edit')->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
-    $routes->post('/:id', ['controller' => 'Tasks', 'action' => 'update'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
+    $routes->connect('/:id/edit', ['controller' => 'Tasks', 'action' => 'edit'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
     $routes->delete('/:id', ['controller' => 'Tasks', 'action' => 'delete'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
-    $routes->get('/new', ['controller' => 'Tasks', 'action' => 'create']);
-    $routes->post('/new', ['controller' => 'Tasks', 'action' => 'store']);
+    $routes->connect('/new', ['controller' => 'Tasks', 'action' => 'create']);
 
     $routes->connect('/login', ['controller' => 'Auth', 'action' => 'login']);
     $routes->connect('/logout', ['controller' => 'Auth', 'action' => 'logout']);

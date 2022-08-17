@@ -17,6 +17,7 @@ namespace App\Controller;
 use Authorization\AuthorizationService;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use DebugKit\Controller\DebugKitController;
 
 /**
  * Application Controller
@@ -41,11 +42,5 @@ class AppController extends Controller
         $this->loadComponent('Authorization.Authorization');
 
         //$this->loadComponent('Security');
-    }
-
-    public function beforeFilter(Event $event)
-    {
-        parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['login']);
     }
 }

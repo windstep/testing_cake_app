@@ -49,7 +49,7 @@ class TasksControllerTest extends TestCase
         $tasks = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->toArray();
         foreach ($tasks as $i => $task) {
             $this->assertResponseContains($task->title);
-            $this->assertResponseContains($task->description);
+            $this->assertResponseContains($task->id);
         }
     }
 
@@ -98,7 +98,7 @@ class TasksControllerTest extends TestCase
         $this->assertRedirect('/' . $tasks[0]->id);
     }
 
-    public function testTaskRedirectsBackOnLackOfData()
+    public function testTaskCreateFailsOnLackOfData()
     {
         $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(1)]);
         $this->enableCsrfToken();
@@ -112,9 +112,7 @@ class TasksControllerTest extends TestCase
             $newData = $data;
             unset($newData[$field]);
             $this->post('/new', $newData);
-            $this->assertRedirect('/new');
-            // Надо узнать, как проверять валидацию. Само поле валидации, насколько я понял, доступно
-            // в сессионом хранилище по ключу $this->ModelName->validationErrors, то есть $this->Task->validationErrors;
+            $this->assertSession(__('Your data contains errors. Fix them end try again'), 'Flash.flash.0.message');
         }
     }
 
@@ -158,7 +156,7 @@ class TasksControllerTest extends TestCase
 
         $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 1, 'author_id' => 1])->first();
 
-        $this->post("/{$task->id}", $data);
+        $this->post("/{$task->id}/edit", $data);
         $this->assertRedirect();
         $updatedDB = (TableRegistry::getTableLocator()->get('app.Tasks'))->get($task->id);
         foreach ($data as $field => $value) {
@@ -180,7 +178,7 @@ class TasksControllerTest extends TestCase
 
         $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
 
-        $this->post("/{$task->id}", $data);
+        $this->post("/{$task->id}/edit", $data);
         $this->assertRedirect();
         $updatedDB = (TableRegistry::getTableLocator()->get('app.Tasks'))->get($task->id);
         foreach ($data as $field => $value) {
@@ -202,7 +200,7 @@ class TasksControllerTest extends TestCase
 
         $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
 
-        $this->post("/{$task->id}", $data);
+        $this->post("/{$task->id}/edit", $data);
         $this->assertRedirect('/');
     }
 
