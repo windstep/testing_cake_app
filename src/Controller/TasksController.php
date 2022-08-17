@@ -61,7 +61,7 @@ class TasksController extends AppController
         ]);
     }
 
-    public function view($id)
+    public function view(int $id)
     {
         $this->Authorization->skipAuthorization();
         $task = $this->Tasks->get($id, ['contain' => ['Author', 'Executor']]);
@@ -72,7 +72,7 @@ class TasksController extends AppController
         ]);
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $task = $this->Tasks->get($id, ['contain' => ['Author', 'Executor']]);
         $this->Authorization->authorize($task, 'update');
@@ -96,7 +96,7 @@ class TasksController extends AppController
         ]);
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
         $task = $this->Tasks->get($id, ['contain' => ['Author', 'Executor']]);
         $this->Authorization->authorize($task, 'delete');
