@@ -55,7 +55,7 @@ class TasksController extends AppController
             'statuses' => TasksTable::STATUS_MAP,
             'defaultState' => TasksTable::STATE_CREATED,
             'defaultStatus' => TasksTable::STATUS_BUG,
-            'users' => $this->Users->find()->combine('id', 'name')->appendItem([null => 'No user'])->toArray(),
+            'users' => $this->Users->find()->combine('id', 'name')->appendItem('No user', null)->toArray(),
         ]);
     }
 
@@ -75,7 +75,7 @@ class TasksController extends AppController
         $task = $this->Tasks->get($id, ['contain' => ['Author', 'Executor']]);
         $this->Authorization->authorize($task, 'update');
 
-        if ($this->request->is('post')) {
+        if ($this->request->is('post') || $this->request->is('put')) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
             if (!$task->hasErrors()) {
                 $this->Tasks->save($task);
@@ -89,8 +89,7 @@ class TasksController extends AppController
             'statuses' => TasksTable::STATUS_MAP,
             'defaultState' => TasksTable::STATE_CREATED,
             'defaultStatus' => TasksTable::STATUS_BUG,
-            'users' => $this->Users->find()
-                ->combine('id', 'name')->appendItem([null => 'No user'])->toArray(),
+            'users' => $this->Users->find()->combine('id', 'name')->appendItem('No user', null)->toArray(),
         ]);
     }
 

@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="col-6">
-                    <?= $this->Form->create($task, ['url' => ['action' => 'update']]) ?>
+                    <?= $this->Form->create($task, ['action' => 'edit']) ?>
                     <fieldset>
                         <legend><?= __('Edit Task') ?></legend>
                         <?php

@@ -33,4 +33,13 @@ class Task extends Entity
         'created' => false,
         'updated' => false,
     ];
+
+    protected function _setExecutorId($executorId)
+    {
+        if ($executorId === 0) {
+            $executorId = null;
+        }
+
+        return $executorId;
+    }
 }
