@@ -15,6 +15,7 @@
 
 namespace App;
 
+use App\Middleware\FlashRedirectHandler;
 use App\Middleware\NotEnoughRightsMiddlewareMiddleware;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceProviderInterface;
@@ -103,7 +104,15 @@ class Application extends BaseApplication implements AuthorizationServiceProvide
             ->add(new NotEnoughRightsMiddlewareMiddleware())
             ->add(new AuthenticationMiddleware($this))
             ->add(new AuthorizationMiddleware($this, [
-                'requireAuthorizationCheck' => false
+                'requireAuthorizationCheck' => false,
+                'unauthorizedHandler' => [
+                    'className' => FlashRedirectHandler::class,
+                    'url' => '/',
+                    'queryParam' => 'redirectUrl',
+                    'exceptions' => [
+                        \Authorization\Exception\ForbiddenException::class,
+                    ],
+                ]
             ]));
 
         return $middlewareQueue;

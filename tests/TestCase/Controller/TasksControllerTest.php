@@ -3,7 +3,6 @@ namespace App\Test\TestCase\Controller;
 
 use App\Model\Entity\Task;
 use App\Model\Table\TasksTable;
-use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
@@ -139,7 +138,8 @@ class TasksControllerTest extends TestCase
         $this->session(['Auth' => (TableRegistry::getTableLocator()->get('app.Users'))->get(3)]);
         $task = (new TasksTable)->find()->limit(1)->toArray()[0];
         $this->get('/' . $task->id . '/edit');
-        $this->assertRedirect('/');
+        $this->assertRedirect();
+        $this->assertSession(__('You cannot access this page'), 'Flash.flash.0.message');
     }
 
     public function testTaskEditableToAuthor()
@@ -202,6 +202,7 @@ class TasksControllerTest extends TestCase
 
         $this->post("/{$task->id}/edit", $data);
         $this->assertRedirect('/');
+        $this->assertSession(__('You cannot access this page'), 'Flash.flash.0.message');
     }
 
     public function testTaskDeletableByAuthor()
@@ -221,6 +222,7 @@ class TasksControllerTest extends TestCase
         $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id' => 1, 'author_id !=' => 1])->first();
         $this->delete("/{$task->id}");
         $this->assertRedirect('/');
+        $this->assertSession(__('You cannot access this page'), 'Flash.flash.0.message');
     }
 
     public function testTaskNotDeletableByRandomUser()
@@ -230,6 +232,7 @@ class TasksControllerTest extends TestCase
         $task = (TableRegistry::getTableLocator()->get('app.Tasks'))->find()->where(['executor_id !=' => 2, 'author_id !=' => 2])->first();
         $this->delete("/{$task->id}");
         $this->assertRedirect('/');
+        $this->assertSession(__('You cannot access this page'), 'Flash.flash.0.message');
     }
 
 }

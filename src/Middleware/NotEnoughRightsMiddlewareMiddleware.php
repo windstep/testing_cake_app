@@ -7,7 +7,6 @@ use Authorization\Exception\ForbiddenException;
 use Cake\Http\Exception\UnauthorizedException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Authorization\Exception\AuthorizationRequiredException;
 
 /**
  * NotEnoughRightsMiddleware middleware
@@ -28,8 +27,6 @@ class NotEnoughRightsMiddlewareMiddleware
             return $next($request, $response);
         } catch (UnauthorizedException | UnauthorizedExceptionAlias | UnauthenticatedException $e) {
             return $response->withHeader('Location', '/login');
-        } catch (ForbiddenException $e) {
-            return $response->withHeader('Location', '/');
         }
     }
 }
