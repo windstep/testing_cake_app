@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Model\Table\TasksTable;
 use App\Model\Table\UsersTable;
 use App\Traits\JsonApiOrderable;
-use Cake\Collection\Collection;
 
 /**
  * @property TasksTable $Tasks
@@ -27,7 +26,6 @@ class TasksController extends AppController
         // доработки
         // 1. Сделать хелпер для генерации ссылок
         // 2. Сделать поля белого списка
-        // 3. Сделать сортировку по отдельным полям.
         $tasks = $this->paginate($this->Tasks, [
             'limit' => 5,
             'order' => $this->getOrderFromRequest(),
@@ -57,7 +55,7 @@ class TasksController extends AppController
             'statuses' => TasksTable::STATUS_MAP,
             'defaultState' => TasksTable::STATE_CREATED,
             'defaultStatus' => TasksTable::STATUS_BUG,
-                'users' => ($this->Users->find())->combine('id', 'name')->appendItem([null => 'No user'])->toArray(),
+            'users' => $this->Users->find()->combine('id', 'name')->appendItem([null => 'No user'])->toArray(),
         ]);
     }
 
@@ -91,7 +89,7 @@ class TasksController extends AppController
             'statuses' => TasksTable::STATUS_MAP,
             'defaultState' => TasksTable::STATE_CREATED,
             'defaultStatus' => TasksTable::STATUS_BUG,
-            'users' => ($this->Users->find())
+            'users' => $this->Users->find()
                 ->combine('id', 'name')->appendItem([null => 'No user'])->toArray(),
         ]);
     }

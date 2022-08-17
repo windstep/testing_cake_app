@@ -32,6 +32,7 @@
         </ul>
     </div>
 </header>
+<?= $this->Flash->render() ?>
 <div class="container page-todo bootstrap snippets bootdeys">
     <?= $this->fetch('content') ?>
 </div>

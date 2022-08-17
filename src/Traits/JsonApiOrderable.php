@@ -11,7 +11,7 @@ trait JsonApiOrderable
         $order = [];
         foreach ($sortFields as $i => $sortField) {
             if (empty($sortField)) {
-                return;
+                return [];
             }
 
             $order[$sortField] = $direction[$i] ?? 'asc';
